@@ -2,12 +2,43 @@ import { Injectable } from '@angular/core';
 import { Ksiazka } from '../models/ksiazka';
 import { Observable, of } from 'rxjs';
 import { KsiazkaBody } from '../models/ksiazka-body';
+import {HttpClient} from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ListaService {
-  private static idGen = 1;
+
+
+  private readonly apiUrl = 'https://localhost:7251/api/ksiazka';
+  constructor(private http: HttpClient) {}
+
+  get(): Observable<Ksiazka[]> {
+    return this.http.get<Ksiazka[]>(this.apiUrl);
+  }
+
+  searchByTitle(searchPhrase: string): Observable<Ksiazka[]> {
+    return this.http.get<Ksiazka[]>(`${this.apiUrl}/search?searchPhrase=${searchPhrase}`);
+  }
+
+  getByID(id: number): Observable<Ksiazka> {
+    return this.http.get<Ksiazka>(`${this.apiUrl}/${id}`);
+  }
+
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  put(id: number, body: KsiazkaBody): Observable<void> {
+    const ksiazka: Ksiazka = { id, ...body };
+    return this.http.put<void>(`${this.apiUrl}/${id}`, ksiazka);
+  }
+
+  post(body: KsiazkaBody): Observable<void> {
+    return this.http.post<void>(this.apiUrl, body);
+  }
+
+  /*private static idGen = 1;
 
   private lista: Ksiazka[] = [
     { id: ListaService.idGen++, tytul: "Zbrodnia i kara", autor: "Fiodor Dostojewski", gatunek: "Powieść psychologiczna", rok: 1866 },
@@ -15,9 +46,9 @@ export class ListaService {
     { id: ListaService.idGen++, tytul: "Rok 1984", autor: "George Orwell", gatunek: "Dystopia", rok: 1949 },
     { id: ListaService.idGen++, tytul: "Wiedźmin: Ostatnie życzenie", autor: "Andrzej Sapkowski", gatunek: "Fantasy", rok: 1993 },
     { id: ListaService.idGen++, tytul: "Duma i uprzedzenie", autor: "Jane Austen", gatunek: "Romans", rok: 1813 }
-  ];
+  ];*/
 
-  get(): Observable<Ksiazka[]> {
+  /*get(): Observable<Ksiazka[]> {
     return of(this.lista);
   }
 
@@ -60,5 +91,5 @@ export class ListaService {
     this.lista.push(ksiazka);
 
     return of(undefined);
-  }
+  }*/
 }
